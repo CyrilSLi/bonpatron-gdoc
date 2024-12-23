@@ -35,7 +35,7 @@
  */
 function onOpen(e) {
   DocumentApp.getUi().createAddonMenu()
-      .addItem('Start', 'showSidebar')
+      .addItem('Start', 'checkText')
       .addToUi();
 }
 
@@ -59,7 +59,12 @@ function onInstall(e) {
  * This method is only used by the regular add-on, and is never called by
  * the mobile add-on version.
  */
-function showSidebar() {
+function checkText() {
+  const text = getSelectedText();
+  if (!text.length || text.length > 1) {
+    DocumentApp.getUi().alert('Please select one contiguous section of text.');
+  }
+  text = text[0];
   const ui = HtmlService.createHtmlOutputFromFile('sidebar')
       .setTitle('Translate');
   DocumentApp.getUi().showSidebar(ui);
@@ -98,7 +103,6 @@ function getSelectedText() {
       }
     }
   }
-  if (!text.length) throw new Error('Please select some text.');
   return text;
 }
 
@@ -228,22 +232,3 @@ function insertText(newText) {
     cursor.insertText(newText);
   }
 }
-
-/**
- * Given text, translate it from the origin language to the destination
- * language. The languages are notated by their two-letter short form. For
- * example, English is 'en', and Spanish is 'es'. The origin language may be
- * specified as an empty string to indicate that Google Translate should
- * auto-detect the language.
- *
- * @param {string} text text to translate.
- * @param {string} origin The two-letter short form for the origin language.
- * @param {string} dest The two-letter short form for the destination language.
- * @return {string} The result of the translation, or the original text if
- *     origin and dest languages are the same.
- */
-function translateText(text, origin, dest) {
-  if (origin === dest) return text;
-  return LanguageApp.translate(text, origin, dest);
-}
-// [END apps_script_docs_translate_quickstart]
