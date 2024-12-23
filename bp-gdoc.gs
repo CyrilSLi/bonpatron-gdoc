@@ -1,20 +1,4 @@
 /**
- * Copyright Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-// [START apps_script_docs_translate_quickstart]
-/**
  * @OnlyCurrentDoc
  *
  * The above comment directs Apps Script to limit the scope of file
@@ -35,7 +19,7 @@
  */
 function onOpen(e) {
   DocumentApp.getUi().createAddonMenu()
-      .addItem('Start', 'checkText')
+      .addItem('Check', 'checkText')
       .addToUi();
 }
 
@@ -64,9 +48,7 @@ function checkText() {
   if (!text.length || text.length > 1) {
     DocumentApp.getUi().alert('Please select one contiguous section of text.');
   }
-  text = text[0];
   const ui = HtmlService.createHtmlOutputFromFile('sidebar')
-      .setTitle('Translate');
   DocumentApp.getUi().showSidebar(ui);
 }
 
@@ -120,33 +102,6 @@ function getPreferences() {
   return {
     originLang: userProperties.getProperty('originLang'),
     destLang: userProperties.getProperty('destLang')
-  };
-}
-
-/**
- * Gets the user-selected text and translates it from the origin language to the
- * destination language. The languages are notated by their two-letter short
- * form. For example, English is 'en', and Spanish is 'es'. The origin language
- * may be specified as an empty string to indicate that Google Translate should
- * auto-detect the language.
- *
- * @param {string} origin The two-letter short form for the origin language.
- * @param {string} dest The two-letter short form for the destination language.
- * @param {boolean} savePrefs Whether to save the origin and destination
- *     language preferences.
- * @return {Object} Object containing the original text and the result of the
- *     translation.
- */
-function getTextAndTranslation(origin, dest, savePrefs) {
-  if (savePrefs) {
-    PropertiesService.getUserProperties()
-        .setProperty('originLang', origin)
-        .setProperty('destLang', dest);
-  }
-  const text = getSelectedText().join('\n');
-  return {
-    text: text,
-    translation: translateText(text, origin, dest)
   };
 }
 
