@@ -107,6 +107,7 @@
                 ev.preventDefault ()
                 req_search ()
         document ["results"].bind ("keydown", keydown)
+        document ["header"].bind ("keydown", keydown)
 
         def save (ev):
             insert_text (ev)
