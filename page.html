@@ -80,7 +80,6 @@
             document ["error"].innerHTML = ev.target.outerHTML + " - " + ev.target.attrs ["title"]
 
         def insert_text (ev):
-            window.console.log (repr (document ["results"].innerText))
             script.run.insertText ("\n--- Text added by bonpatron-gdoc ---\n" + re.sub ("\n+", "\n", document ["results"].innerText))
 
         def complete (res, userObj = None):
@@ -101,7 +100,6 @@
             config ["sex"] = document.querySelector ('input[name="gender"]:checked').value
             config ["isL1"] = document.querySelector ('input[name="native"]:checked').value
 
-            window.console.log (config)
             script.run.withSuccessHandler (complete).fetch (config)
 
         def keydown (ev): # Fetch on 1 second of inactivity
