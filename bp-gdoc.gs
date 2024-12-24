@@ -74,21 +74,24 @@ function getSelectedText() {
   return text.join("\n");
 }
 
-/**
- * Gets the stored user preferences for the origin and destination languages,
- * if they exist.
- * This method is only used by the regular add-on, and is never called by
- * the mobile add-on version.
- *
- * @return {Object} The user's origin and destination language preferences, if
- *     they exist.
- */
-function getPreferences() {
-  const userProperties = PropertiesService.getUserProperties();
-  return {
-    originLang: userProperties.getProperty('originLang'),
-    destLang: userProperties.getProperty('destLang')
-  };
+function checkConfig(key, value) {
+    const defaults = {
+        gender: "m",
+        native: ""
+    }
+    var property = PropertiesService.getUserProperties().getProperty(key);
+    if (property === null) {
+        property = defaults[key];
+    }
+    if (property === value) {
+        return "checked";
+    } else {
+        return "";
+    }
+}
+
+function setConfig(key, value) {
+    PropertiesService.getUserProperties().setProperty(key, value);
 }
 
 /**

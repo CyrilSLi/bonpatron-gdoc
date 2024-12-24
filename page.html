@@ -113,6 +113,8 @@
         def save (ev):
             insert_text (ev)
             script.host.close ()
+            script.run.setConfig ("gender", document.querySelector ('input[name="gender"]:checked').value)
+            script.run.setConfig ("native", document.querySelector ('input[name="native"]:checked').value)
         document ["save"].bind ("click", save)
 
         document ["results"].bind ("paste", lambda ev: ev.preventDefault ()) # Prevent pasting
@@ -124,16 +126,16 @@
         <p id="status" class="option">Loading...</p>
         <span class="option">
             <span class="label">"je" is</span>
-            <input type="radio" name="gender" id="fem." value="f">
+            <input type="radio" name="gender" id="fem." value="f" <?= checkConfig("gender", "f") ?> >
             <label for="fem.">feminine</label>
-            <input type="radio" name="gender" id="masc." value="m" checked>
+            <input type="radio" name="gender" id="masc." value="m" <?= checkConfig("gender", "m") ?> >
             <label for="masc.">masculine</label>
         </span>
         <span class="option">
             <span class="label">Native speaker?</span>
-            <input type="radio" name="native" id="yes" value="1">
+            <input type="radio" name="native" id="yes" value="1" <?= checkConfig("native", "1") ?> >
             <label for="yes">Yes</label>
-            <input type="radio" name="native" id="no" value="" checked>
+            <input type="radio" name="native" id="no" value="" <?= checkConfig("native", "") ?> >
             <label for="no">No</label>
         </span>
         <button id="save" class="option">Save</button>
