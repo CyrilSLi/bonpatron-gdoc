@@ -1,139 +1,153 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang = "en">
 <head>
-    <title>edugameconvert - Convert questions between educational game platforms</title>
-    <meta charset="utf-8">
-    <script src="https://cdn.jsdelivr.net/npm/brython@3/brython.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/brython@3/brython_stdlib.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/zipcelx@1.6.2/lib/standalone.min.js"></script>
+    <title>BPImproved</title>
+    <meta charset = "utf-8">
+    <script src = "https://cdn.jsdelivr.net/npm/brython@3.11/brython.min.js"></script>
+    <script src = "https://cdn.jsdelivr.net/npm/brython@3.11/brython_stdlib.js"></script>
+    <script src = "https://cdn.jsdelivr.net/npm/any-date-parser/dist/browser-bundle.min.js"></script>
     <style>
-        html, body, div {
+        html, body {
             margin: 0px;
-        }
-        #site {
-            height: 100vh;
             height: 100dvh;
+            width: 100dvw;
             display: flex;
             flex-direction: column;
         }
-        #tutorial {
-            display: block;
-        }
-        h1 {
+        p, span, div, textarea, form, button {
+            color: #000000;
             font-family: Arial, sans-serif;
-            font-size: 36px;
-            font-weight: bold;
-            margin: 0px 10px;
-            flex: 1;
-        }
-        pre {
-            font-family: Arial, sans-serif;
-            font-size: 24px;
-            margin: 20px;
-            line-height: 1.5;
-            white-space: pre-wrap;       /* Since CSS 2.1 */
-            white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
-            white-space: -pre-wrap;      /* Opera 4-6 */
-            white-space: -o-pre-wrap;    /* Opera 7 */
-            word-wrap: break-word;       /* Internet Explorer 5.5+ */
-        }
-        p {
+            font-size: 18px;
             margin: 0px;
-            padding: 0px;
-            display: inline;
         }
-        a, a:visited {
-            text-decoration: underline;
-            color: blue;
+        #header {
+            display: flex;
+            flex-direction: row;
+            margin: 5px;
         }
-        input, button, label, span {
-            font-family: Arial, sans-serif;
-            font-size: 32px;
-            color: black;
-            line-height: normal;
-            text-decoration: none;
-            font-weight: normal;
-            padding: 0px;
+        #results {
+            border: 3px solid black;
+            line-height: 1.75;
+            margin: 10px;
+            padding: 10px;
+            flex: 1;
+            overflow-y: scroll;
         }
-        input, button {
+        span:not(.option):not(.label) {
+            color: #ff0000;
+            padding: 5px;
+            border: 1px solid red;
+            margin: 5px 0px;
+        }
+        #error {
+            margin: 10px 10px 0px;
+            line-height: 1.75;
+        }
+        .option {
+            margin: 0px 20px;
+        }
+        button {
             border-radius: 0px;
             background-color: #f8f8f8;
             -webkit-appearance: none;
-            border: 1px solid gray;
-        }
-        ::placeholder {
-            color: gray;
-            opacity: 1;
-        }
-        ::-ms-input-placeholder {
-            color: gray;
-        }
-        span, label, button {
-            margin: 0px 10px;
-        }
-        #form {
-            display: flex;
-            flex-direction: column;
-        }
-        #platform, #header, #footer {
-            display: flex;
-            flex-direction: row;
-            margin: 20px 10px;
-        }
-        #platform {
-            overflow-x: auto;
-        }
-        #site button {
-            flex: 1;
-        }
-        #help1, #help2, #report {
-            margin: 0px 10px;
-            padding: 5px 7px;
-            font-size: 20px;
-        }
-        #game_url {
-            margin: 20px 20px 0px;
-            padding: 5px 7px;
-            font-size: 28px;
-            display: block;
-            flex: 1;
-        }
-        input[type="radio"] {
-            width: 0px;
-            height: 0px;
-            border: 0px;
-            margin: 0px;
-            padding: 0px;
-        }
-        input[type="radio"]:checked + label {
-            background-color: lightcoral;
-        }
-        textarea {
-            font-family: monospace;
-            font-size: 20px;
-            margin: 0px 20px;
-            padding: 10px;
-            color: darkred;
-            line-height: normal;
-            flex: 1;
-            resize: none;
-            word-break: break-all;
-            overflow-y: scroll;
         }
     </style>
 </head>
-<body onload="brython (0)">
+<body onload = "brython (0)">
     <noscript>
-        <p>JavaScript is required to use this website.</p>
+        <p id = "start">JavaScript is required to use this website.</p>
     </noscript>
     <script type = "text/python">
-        from browser import document, html, ajax, window
-        import json, html as py_html # Avoid name conflict with Brython's html module
+        from browser import document, ajax, html, window
+        import re
+        global selected, config
         script = window.google.script
+        selected = "<?= getSelectedText(); ?>" # Use templated HTML to get selected text
+        config = {
+            "docLang": "fr",
+            "iLang": "en",
+            "sex": "m",
+            "isL1": "",
+            "isAjax": "true",
+            "typedText": ""
+        }
 
-        script.host.setHeight (window.parent.innerHeight)
-        script.host.setWidth (window.parent.innerWidth)
-        document <= html.P (script.run.getSelectedText ())
+        for i in selected.split ("\n"):
+            document ["results"] <= html.P (i)
+        document <= html.DIV ("", id = "error")
+
+        def show_error (ev):
+            document ["error"].innerHTML = ev.target.outerHTML + " - " + ev.target.attrs ["title"]
+
+        def insert_text (ev):
+            window.console.log (repr (document ["results"].innerText))
+            script.run.insertText ("\n--- Text added by bonpatron-gdoc ---\n" + re.sub ("\n+", "\n", document ["results"].innerText))
+
+        def complete (res, userObj = None):
+            document ["results"].clear ()
+            window.display_result (res)
+            for i in document ["results"].select ("#results p"):
+                for j in i:
+                    j.bind ("mouseenter", show_error)
+            document ["status"].innerHTML = "Ready!"
+            document ["results"].attrs ["contenteditable"] = "true"
+
+        def req_search ():
+            document ["results"].attrs ["contenteditable"] = "false"
+            document ["status"].innerHTML = "Fetching"
+            document ["error"].innerHTML = ""
+
+            config ["typedText"] = document ["results"].innerText
+            config ["sex"] = document.querySelector ('input[name="gender"]:checked').value
+            config ["isL1"] = document.querySelector ('input[name="native"]:checked').value
+
+            window.console.log (config)
+            script.run.withSuccessHandler (complete).fetch (config)
+
+        def keydown (ev): # Fetch on 1 second of inactivity
+            if ev.key == "Enter" and (ev.shiftKey or ev.ctrlKey):
+                ev.preventDefault ()
+                req_search ()
+        document ["results"].bind ("keydown", keydown)
+
+        def save (ev):
+            insert_text (ev)
+            script.host.close ()
+        document ["save"].bind ("click", save)
+
+        document ["results"].bind ("paste", lambda ev: ev.preventDefault ()) # Prevent pasting
+
+        req_search ()
+    </script>
+
+    <form action = "javascript:void (0);" id="header">
+        <p id="status" class="option">Loading...</p>
+        <span class="option">
+            <span class="label">"je" is</span>
+            <input type="radio" name="gender" id="fem." value="f">
+            <label for="fem.">feminine</label>
+            <input type="radio" name="gender" id="masc." value="m" checked>
+            <label for="masc.">masculine</label>
+        </span>
+        <span class="option">
+            <span class="label">Native speaker?</span>
+            <input type="radio" name="native" id="yes" value="1">
+            <label for="yes">Yes</label>
+            <input type="radio" name="native" id="no" value="" checked>
+            <label for="no">No</label>
+        </span>
+        <button id="save" class="option">Save</button>
+    </form>
+    <div id="results" contenteditable="true" spellcheck="false"></div>
+    <script>
+        function display_result (result) {
+            parser = new DOMParser ();
+            const children = parser.parseFromString (result, "text/xml").getElementsByTagName ("results") [0].getElementsByTagName ("text") [0].childNodes;
+            for (let i = 0; i < children.length; i++) {
+                document.getElementById ("results").appendChild (children [i]);
+                document.getElementById ("results").innerHTML += " ";
+            }
+        }
     </script>
 </body>
 </html>
