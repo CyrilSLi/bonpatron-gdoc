@@ -33,11 +33,19 @@
             flex: 1;
             overflow-y: scroll;
         }
-        span:not(.option):not(.label) {
-            color: #ff0000;
+        span.mod, span.ver {
+            color: red;
             padding: 5px;
             border: 1px solid red;
             margin: 5px 0px;
+            font-weight: bold;
+        }
+        span.spellmod, span.spellver {
+            color: mediumblue;
+            padding: 5px;
+            border: 1px solid mediumblue;
+            margin: 5px 0px;
+            font-weight: bold;
         }
         #error {
             margin: 10px 10px 0px;
@@ -50,6 +58,9 @@
             border-radius: 0px;
             background-color: #f8f8f8;
             -webkit-appearance: none;
+        }
+        #status {
+            font-weight: bold;
         }
     </style>
 </head>
@@ -72,9 +83,10 @@
             "typedText": ""
         }
 
+        error_placeholder = '<span class="mod">Errors look like this</span> <span class="spellmod">Spellcheck suggestions look like this</span>'
         for i in selected.split ("\n"):
             document ["results"] <= html.P (i)
-        document <= html.DIV ("", id = "error")
+        document <= html.DIV (error_placeholder, id = "error")
 
         def show_error (ev):
             document ["error"].innerHTML = ev.target.outerHTML + " - " + ev.target.attrs ["title"]
@@ -92,9 +104,10 @@
             document ["results"].attrs ["contenteditable"] = "true"
 
         def req_search ():
+            global error_placeholder
             document ["results"].attrs ["contenteditable"] = "false"
             document ["status"].innerHTML = "Fetching"
-            document ["error"].innerHTML = ""
+            document ["error"].innerHTML = error_placeholder
 
             config ["typedText"] = document ["results"].innerText
             config ["sex"] = document.querySelector ('input[name="gender"]:checked').value
@@ -116,7 +129,10 @@
             script.run.setConfig ("native", document.querySelector ('input[name="native"]:checked').value)
         document ["save"].bind ("click", save)
 
-        document ["results"].bind ("paste", lambda ev: ev.preventDefault ()) # Prevent pasting
+        def paste(ev): # Prevent pasting
+            ev.preventDefault ()
+            window.alert ("Please edit inside Google Docs instead of pasting!")
+        document ["results"].bind ("paste", paste)
 
         req_search ()
     </script>

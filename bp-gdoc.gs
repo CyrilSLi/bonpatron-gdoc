@@ -118,7 +118,7 @@ function checkText() {
             .evaluate()
             .setWidth(999999)   // Will be limited to the size of the screen
             .setHeight(999999);
-        DocumentApp.getUi().showModalDialog(page, 'bonpatron-gdoc');
+        DocumentApp.getUi().showModalDialog(page, 'bonpatron-gdoc (Shift-Enter or Ctrl-Enter to recheck, "Save" to save text)');
     }
 }
 
